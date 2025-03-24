@@ -24,7 +24,11 @@ interface ICurrentWeatherData {
 }
 
 export interface IWeatherService {
-  getCurrentWeather(city: string, country: string): Observable<ICurrentWeather>
+  getCurrentWeather(
+    search: string | number,
+    country?: string
+  ): Observable<ICurrentWeather>
+  getCurrentWeatherByCoords(coords: GeolocationCoordinates): Observable<ICurrentWeather>
 }
 
 @Injectable({
@@ -32,6 +36,14 @@ export interface IWeatherService {
 })
 export class WeatherService implements IWeatherService {
   constructor(private httpClient: HttpClient) {}
+
+  getCurrentWeatherByCoords(coords: GeolocationCoordinates): Observable<ICurrentWeather> {
+    const uriParams = new HttpParams()
+      .set('lat', coords.latitude.toString())
+      .set('lon', coords.longitude.toString())
+
+    return this.getCurrentWeatherHelper(uriParams)
+  }
 
   getCurrentWeather(
     search: string | number,
